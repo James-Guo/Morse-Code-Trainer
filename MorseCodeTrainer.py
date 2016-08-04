@@ -6,10 +6,17 @@ from pygame.locals import *
 
 #  start pygame
 pygame.init()
+pygame.display.set_caption('Morse Code Trainer')
 
 FPS = 60   # frames per second, the general speed of the program
 WINDOWWIDTH = 640   # size of window's width in pixels
 WINDOWHEIGHT = 480  # size of windows' height in pixels
+
+global FPSCLOCK, DISPLAYSURF
+FPSCLOCK = pygame.time.Clock()
+DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+global PAUSE
+PAUSE = False
 
 # Colours used
 RED = (255, 0, 0)
@@ -21,17 +28,15 @@ PURPLE = (160, 32, 240)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
+TEXTCOLOUR = BLACK
+BACKGROUNDCOLOUR = WHITE
 LETTERCOLOUR = BLUE
 HIGHLIGHTCOLOUR = YELLOW
 MENUCOLOUR = RED
+REFERENCECOLOUR1 = PURPLE
+REFERENCECOLOUR2 = BLACK
 
-global FPSCLOCK, DISPLAYSURF
-FPSCLOCK = pygame.time.Clock()
-DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
-
-pygame.display.set_caption('Morse Code Trainer')
-
-
+# fonts used
 LARGETEXT = pygame.font.Font('freesansbold.ttf', 32)
 SMALLTEXT = pygame.font.Font("freesansbold.ttf", 20)
 
@@ -39,9 +44,6 @@ MORSECODELARGETEXT = pygame.font.Font('MorseCode.ttf', 100)
 MORSECODESMALLTEXT = pygame.font.Font('MorseCode.ttf', 55)
 
 BEEP = pygame.mixer.Sound('Beep.wav')
-
-global PAUSE
-PAUSE = False
 
 #  Not needed currently
 MORSECODEDICTIONARY = {
@@ -75,7 +77,7 @@ MORSECODEDICTIONARY = {
 
 
 def main():
-    DISPLAYSURF.fill(WHITE)
+    DISPLAYSURF.fill(BACKGROUNDCOLOUR)
     drawMenu()
 
 
@@ -88,10 +90,10 @@ def drawMenu():
 
         button(
             "Guess Morse Code", 230, 200, 190, 50,
-            WHITE, MENUCOLOUR, "guessMorseCode")
-        button("Reference", 230, 250, 190, 50, WHITE, MENUCOLOUR, "reference")
-        button("Options", 230, 300, 190, 50, WHITE, MENUCOLOUR, "options")
-        button("Quit", 230, 400, 190, 50, WHITE, MENUCOLOUR, "quit")
+            BACKGROUNDCOLOUR, MENUCOLOUR, "guessMorseCode")
+        button("Reference", 230, 250, 190, 50, BACKGROUNDCOLOUR, MENUCOLOUR, "reference")
+        button("Options", 230, 300, 190, 50, BACKGROUNDCOLOUR, MENUCOLOUR, "options")
+        button("Quit", 230, 400, 190, 50, BACKGROUNDCOLOUR, MENUCOLOUR, "quit")
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
@@ -103,7 +105,7 @@ def guessMorseCode():
     currentLetter = generateLetter()
 
     while (True):
-        DISPLAYSURF.fill(WHITE)
+        DISPLAYSURF.fill(BACKGROUNDCOLOUR)
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -133,7 +135,8 @@ def guessMorseCode():
 
 
 def drawReference():
-    DISPLAYSURF.fill(WHITE)
+    global REFERENCECOLOUR1, REFERENCECOLOUR2
+    DISPLAYSURF.fill(BACKGROUNDCOLOUR)
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -146,15 +149,15 @@ def drawReference():
         :len(lowercaseLetters) // 2], lowercaseLetters[len(lowercaseLetters) // 2:]
 
         for letter, y in zip(firstpart, myRange(30, 420, 30)):
-            drawLetter(letter, 100, y, 8, 8, SMALLTEXT, RED)
-            drawLetter(letter, 150, y + 10, 8, 8, MORSECODESMALLTEXT, BLACK)
+            drawLetter(letter, 100, y, 8, 8, SMALLTEXT, REFERENCECOLOUR1)
+            drawLetter(letter, 150, y + 10, 8, 8, MORSECODESMALLTEXT, REFERENCECOLOUR2)
 
         for letter, y in zip(secondpart, myRange(30, 420, 30)):
-            drawLetter(letter, 500, y, 8, 8, SMALLTEXT, RED)
-            drawLetter(letter, 550, y + 10, 8, 8, MORSECODESMALLTEXT, BLACK)
+            drawLetter(letter, 500, y, 8, 8, SMALLTEXT, REFERENCECOLOUR1)
+            drawLetter(letter, 550, y + 10, 8, 8, MORSECODESMALLTEXT, REFERENCECOLOUR2)
 
 
-        button("Main Menu", 230, 350, 190, 50, WHITE, MENUCOLOUR, "menu")
+        button("Main Menu", 230, 350, 190, 50, BACKGROUNDCOLOUR, MENUCOLOUR, "menu")
 
         pygame.display.update()
         FPSCLOCK.tick(FPS)
@@ -173,22 +176,19 @@ def pause():
                 pygame.quit()
                 sys.exit()
 
-        DISPLAYSURF.fill(WHITE)
+        DISPLAYSURF.fill(BACKGROUNDCOLOUR)
 
-        gameover_display = LARGETEXT.render('Game paused!', True, RED, WHITE)
-        DISPLAYSURF.blit(gameover_display, (220, 150))
+        drawText(WINDOWWIDTH/2 + 30, 150, LARGETEXT, "Game paused!", TEXTCOLOUR)
 
-        button("Continue", 230, 300, 190, 50, WHITE, MENUCOLOUR, "unpause")
-        button("Main Menu", 230, 350, 190, 50, WHITE, MENUCOLOUR, "menu")
-        button("Quit", 230, 400, 190, 50, WHITE, MENUCOLOUR, "quit")
+        button("Continue", 230, 300, 190, 50, BACKGROUNDCOLOUR, MENUCOLOUR, "unpause")
+        button("Main Menu", 230, 350, 190, 50, BACKGROUNDCOLOUR, MENUCOLOUR, "menu")
+        button("Quit", 230, 400, 190, 50, BACKGROUNDCOLOUR, MENUCOLOUR, "quit")
 
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
-    DISPLAYSURF.fill(WHITE)
+    DISPLAYSURF.fill(BACKGROUNDCOLOUR)
     #  drawScore(WINDOWWIDTH - 100, WINDOWHEIGHT - 50, LARGETEXT, 'Score: ', SCORE, CIRCLECOLOUR)
-
-
 
 
 def drawOptions():
@@ -198,7 +198,7 @@ def drawOptions():
                 pygame.quit()
                 sys.exit()
 
-        button("Main Menu", 230, 350, 190, 50, WHITE, MENUCOLOUR, "menu")
+        button("Main Menu", 230, 350, 190, 50, BACKGROUNDCOLOUR, MENUCOLOUR, "menu")
 
         pygame.display.update()
         FPSCLOCK.tick(FPS)
@@ -216,13 +216,13 @@ def button(msg, x, y, w, h, inactiveColour, activeColour, action=None):
             if action == "guessMorseCode":
                 guessMorseCode()
             elif action == "menu":
-                DISPLAYSURF.fill(WHITE)
+                DISPLAYSURF.fill(BACKGROUNDCOLOUR)
                 drawMenu()
             elif action == "reference":
-                DISPLAYSURF.fill(WHITE)
+                DISPLAYSURF.fill(BACKGROUNDCOLOUR)
                 drawReference()
             elif action == "options":
-                DISPLAYSURF.fill(WHITE)
+                DISPLAYSURF.fill(BACKGROUNDCOLOUR)
                 drawOptions()
             elif action == "unpause":
                 unpause()
@@ -242,8 +242,16 @@ def generateLetter():
     letterChosen = random.choice(lowercaseLetters)
     return letterChosen
 
+
+def drawText(x, y, textSize, text, colour):
+    textSurfaceObj = textSize.render(str(text), True, colour, BACKGROUNDCOLOUR)
+    textRectObj = textSurfaceObj.get_rect()
+    textRectObj.center = (x, y)
+    DISPLAYSURF.blit(textSurfaceObj, textRectObj)
+
+
 def drawLetter(letter, x, y, w, h, font, colour):
-    pygame.draw.rect(DISPLAYSURF, WHITE, (x, y, w, h))
+    pygame.draw.rect(DISPLAYSURF, BACKGROUNDCOLOUR, (x, y, w, h))
     textSurf, textRect = textObjects(letter, font, colour)
     textRect.center = ((x + (w / 2), (y + (h / 2))))
     DISPLAYSURF.blit(textSurf, textRect)
@@ -257,7 +265,7 @@ def drawLetterBorder(x, y, w, h):
         pygame.draw.rect(
             DISPLAYSURF, HIGHLIGHTCOLOUR, (x - 5, y - 5, w + 10, h + 10), 4)
     else:
-        pygame.draw.rect(DISPLAYSURF, WHITE, (x - 5, y - 5, w + 10, h + 10), 4)
+        pygame.draw.rect(DISPLAYSURF, BACKGROUNDCOLOUR, (x - 5, y - 5, w + 10, h + 10), 4)
 
 
 def textObjects(text, font, textColour=BLACK):

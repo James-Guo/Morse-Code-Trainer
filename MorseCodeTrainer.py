@@ -2,6 +2,7 @@ import random
 import pygame
 import string
 import sys
+import time
 from pygame.locals import *
 
 #  start pygame
@@ -103,33 +104,35 @@ def guessMorseCode():
     global PAUSE
     press = pygame.key.get_pressed()
     currentLetter = generateLetter()
-
+    chances = 3
+    letterPressed = ""
+    letterTime = FPS
     while (True):
         DISPLAYSURF.fill(BACKGROUNDCOLOUR)
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            if pygame.key.get_focused():
+            # if pygame.key.get_pressed():
                 #  Gets the current key pressed
-                press = pygame.key.get_pressed()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     PAUSE = True
                     pause()
+                if event.key < 127:
+                    letterPressed = str(chr(event.key))
+                    if letterPressed == currentLetter:
+                        playBeep()
+                        currentLetter = generateLetter()
+                    else:
+                        chances -= 1
+                        if chances == 0:
+                            drawGameOver()
 
-        for i in range(0, len(press)):
-            if press[i] == 1:
-                #  gets the letter that was pressed
-                letterInputted = pygame.key.name(i)
-                drawLetter(letterInputted, 275, 250, 100, 100, LARGETEXT, RED)
-                if letterInputted == currentLetter:
-                    playBeep()
-                    currentLetter = generateLetter()
 
-        # drawLetters()
-
+        drawLetter(letterPressed, 275, 250, 100, 100, LARGETEXT, RED)
         drawLetter(currentLetter, 275, 175, 100, 100, MORSECODELARGETEXT, BLACK)
+        drawText(WINDOWWIDTH - 100, WINDOWHEIGHT - 50, LARGETEXT, str(chances), TEXTCOLOUR)
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
@@ -155,7 +158,6 @@ def drawReference():
         for letter, y in zip(secondpart, myRange(30, 420, 30)):
             drawLetter(letter, 500, y, 8, 8, SMALLTEXT, REFERENCECOLOUR1)
             drawLetter(letter, 550, y + 10, 8, 8, MORSECODESMALLTEXT, REFERENCECOLOUR2)
-
 
         button("Main Menu", 230, 350, 190, 50, BACKGROUNDCOLOUR, MENUCOLOUR, "menu")
 
@@ -189,6 +191,25 @@ def pause():
 
     DISPLAYSURF.fill(BACKGROUNDCOLOUR)
     #  drawScore(WINDOWWIDTH - 100, WINDOWHEIGHT - 50, LARGETEXT, 'Score: ', SCORE, CIRCLECOLOUR)
+
+
+def drawGameOver():
+    global SCORE
+    DISPLAYSURF.fill(BACKGROUNDCOLOUR)
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                exportSave()
+                pygame.quit()
+                sys.exit()
+
+        #  draw game over text
+        drawText(WINDOWWIDTH / 2, WINDOWHEIGHT / 2 - 25, LARGETEXT, "Game over!", TEXTCOLOUR)
+
+        button("Main Menu", 230, 350, 190, 50, BACKGROUNDCOLOUR, MENUCOLOUR, "menu")
+
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
 
 
 def drawOptions():

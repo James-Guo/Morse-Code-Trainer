@@ -44,7 +44,6 @@ SMALLTEXT = pygame.font.Font("freesansbold.ttf", 20)
 MORSECODELARGETEXT = pygame.font.Font('MorseCode.ttf', 100)
 MORSECODESMALLTEXT = pygame.font.Font('MorseCode.ttf', 55)
 
-BEEP = pygame.mixer.Sound('Beep.wav')
 
 #  Not needed currently
 MORSECODEDICTIONARY = {
@@ -122,9 +121,10 @@ def guessMorseCode():
                 if event.key < 127:
                     letterPressed = str(chr(event.key))
                     if letterPressed == currentLetter:
-                        playBeep()
+                        playCorrectAnswer()
                         currentLetter = generateLetter()
                     else:
+                        playWrongAnswer()
                         chances -= 1
                         if chances == 0:
                             drawGameOver()
@@ -294,8 +294,14 @@ def textObjects(text, font, textColour=BLACK):
     return textSurface, textSurface.get_rect()
 
 
-def playBeep():
-    BEEP.play()
+def playCorrectAnswer():
+    correctAnswer = pygame.mixer.Sound('CorrectAnswer.wav')
+    correctAnswer.play()
+
+
+def playWrongAnswer():
+    incorrectAnswer = pygame.mixer.Sound("IncorrectAnswer.wav")
+    incorrectAnswer.play()
 
 """
 def drawLetters():
